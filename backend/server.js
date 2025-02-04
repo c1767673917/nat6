@@ -92,6 +92,22 @@ app.delete('/api/memos/:id', async (req, res) => {
   }
 })
 
+// 编辑备忘录
+app.put('/api/memos/:id', async (req, res) => {
+  const { id } = req.params
+  const { content } = req.body
+  try {
+    await db.run(
+      'UPDATE memos SET content = ? WHERE id = ?',
+      content,
+      id
+    )
+    res.json({ success: true })
+  } catch (err) {
+    res.status(500).json({ error: '更新备忘录失败' })
+  }
+})
+
 // 启动服务器
 initDB().then(() => {
   app.listen(3000, () => {
