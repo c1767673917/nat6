@@ -1,35 +1,20 @@
-version: '3.8'
+version: '3'
 
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: docker/frontend.Dockerfile
+  nginx:
+    image: nginx:alpine
     ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=https://api.m.loux.us.kg
-    depends_on:
-      - backend
-
-  backend:
-    build:
-      context: .
-      dockerfile: docker/backend.Dockerfile
-    ports:
-      - "3001:3001"
-    environment:
-      - MONGODB_URI=mongodb://mongo:27017/memo-app
-      - FRONTEND_URL=https://m.loux.us.kg
-    depends_on:
-      - mongo
-
-  mongo:
-    image: mongo:latest
+      - "80:80"
+      - "443:443"
     volumes:
-      - mongo-data:/data/db
-    ports:
-      - "27017:27017"
-
-volumes:
-  mongo-data: 
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'" 
