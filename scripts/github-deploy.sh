@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 配置 Git
-git config --global user.email "你的邮箱"
+git config --global user.email "c1767673917@gmail.com"
 git config --global user.name "c1767673917"
 
 # 克隆仓库
