@@ -26,21 +26,27 @@ check_requirements() {
 main() {
     check_requirements
     
-    # 克隆项目
-    echo -e "${GREEN}克隆项目代码...${NC}"
-    git clone https://github.com/c1767673917/nat6.git
-    cd nat6
+    # 下载所需文件
+    echo -e "${GREEN}下载配置文件...${NC}"
+    wget https://raw.githubusercontent.com/c1767673917/nat6/master/docker-compose.yml
+    wget https://raw.githubusercontent.com/c1767673917/nat6/master/init-letsencrypt.sh
+    chmod +x init-letsencrypt.sh
 
-    # 创建必要的目录
+    # 创建必要的目录和文件
     mkdir -p data/nginx
     mkdir -p data/certbot
+    
+    # 下载 Nginx 配置
+    mkdir -p data/nginx
+    wget -O data/nginx/app.conf https://raw.githubusercontent.com/c1767673917/nat6/master/data/nginx/app.conf
 
     # 启动服务
     echo -e "${GREEN}启动服务...${NC}"
     docker-compose up -d
 
     echo -e "${GREEN}安装完成!${NC}"
-    echo "您的网站已经部署在 https://m.loux.us.kg"
+    echo "请运行 ./init-letsencrypt.sh 来配置 SSL 证书"
+    echo "完成后您的网站将部署在 https://m.loux.us.kg"
 }
 
 main 
